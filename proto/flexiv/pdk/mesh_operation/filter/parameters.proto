@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package flexiv.pdk.mesh_operation.filter;
+
+import "flexiv/pdk/spatial/geometry.proto";
+
+// Parameters to smooth a mesh.
+message SmoothMesh {
+  // Required. Pass band for smoothing. The smaller the pass band, the smoother the mesh, but also the more deviation from the original mesh. A value of between 0.01 to 0.1 is usually a good choice.
+  double             pass_band      = 1; 
+
+  // Required. Number of smoothing iteration. The larger the number of iterations, the smoother the mesh, but also the more deviation from the original mesh. A value of between 10 to 100 is usually a good choice.
+  int32              num_iterations = 2;
+}
+
+// Parameters to extract the largest region of a mesh.
+message LargestRegion {
+  // No parameter is needed for this filter, as it simply extracts the largest connected region of the mesh.
+}
+
+// Parameters to filter mesh with a bounding box in the world frame
+message BoundingBox {
+  // The center of the bounding box
+  spatial.Vector3 bbox_center = 1;
+
+  // The orientation of the bounding box, represented as a quaternion
+  spatial.Quaternion bbox_orientation = 2;
+
+  // Bounding box size along the x, y, and z axes
+  spatial.Vector3 bbox_size = 3;
+}
+
+// Parameters to fill holes in a mesh.
+message FillHoles {
+  // Required. Holes with a size (diameter) smaller than this value will be filled, in metre.
+  double hole_size = 1;
+}
+
+// Parameters to sharpen a mesh.
+message Sharpen {
+  // Required. Number of sharpening iterations. The larger the number of iterations, the sharper the mesh, but also the more deviation from the original mesh.
+  int32 num_iterations = 1;
+
+  // Required. Strength of the sharpening effect applied at each iteration.
+  double strength = 2;
+}
+
+// Parameters to remove disconnected regions of a mesh smaller than a minimum surface area.
+message MinimumSurfaceArea {
+  // Required. Minimum surface area in square metre. Connected regions with a surface area smaller than this value will be removed.
+  double minimum_surface_area = 1;
+}
+
+// Parameters to resample a mesh with a uniform point density.
+message UniformResampling {
+  // Required. Target number of points per unit area (square metre) after resampling.
+  double num_points_per_unit_area = 1;
+}

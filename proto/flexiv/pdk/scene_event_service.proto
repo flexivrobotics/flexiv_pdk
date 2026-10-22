@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package flexiv.pdk;
+
+import "flexiv/pdk/config_service.proto"; // for ConfigType
+
+// Single ordered stream of committed scene changes.
+//
+// A scene change has two projections: the config *model* it touched (drives the
+// GUI model list / dropdown) and the *frames* it created or moved (drives the
+// graphics / kinematic-tree view). SceneEvent reports both in one ordered event
+// so a client that needs both never has to reconcile two independent streams.
+//
+// This is the sole change-notification channel. FrameService is a pure
+// request/response spatial API and does not stream events.
+service SceneEventService {
+
+  // Stream scene events, see SceneEvent.
+  rpc WatchSceneEvents(WatchSceneEventsRequest) returns (stream SceneEvent);
+}
+
+// Notification emitted when the scene changes on the server.
+message SceneEvent {
+
+  // What kind of change occurred.
+  enum Change {
+    CHANGE_UNKNOWN   = 0;
+    CHANGE_ADDED     = 1;
+    CHANGE_UPDATED   = 2;
+    CHANGE_REMOVED   = 3;
+    CHANGE_RENAMED   = 4;
+    CHANGE_REFRESHED = 5; // Bulk change; client should do a full resync.
+  }
+
+  // Which layer the change originated at.
+  enum Origin {
+    ORIGIN_UNKNOWN = 0;
+    ORIGIN_CONFIG  = 1; // A saved model changed (persisted). `entity` is set.
+    ORIGIN_FRAME   = 2; // A frame moved in the transform layer only (e.g. an
+                        // unsaved drag). `entity` is unset.
+  }
+
+  Change          change   = 1;
+  Origin          origin   = 2;
+  EntityRef       entity   = 3; // Set iff origin == ORIGIN_CONFIG.
+  repeated string frames   = 4; // Frame names created/affected. May be empty on
+                                // a CONFIG event whose geometry was already
+                                // current (e.g. saving a previously-dragged
+                                // object) — this is normal, not an error.
+  string          new_name = 5; // New name for CHANGE_RENAMED (entity.name /
+                                // frames carry the previous name).
+}
+
+// Identifies the config model a CONFIG-origin event refers to.
+message EntityRef {
+  ConfigType type = 1;
+  string     name = 2;
+}
+
+// Request to subscribe to scene events. Filters are optional.
+message WatchSceneEventsRequest {
+  SceneEvent.Origin origin_filter = 1; // ORIGIN_UNKNOWN streams all origins.
+  ConfigType        type_filter   = 2; // CONFIG_TYPE_ALL streams all types.
+                                        // Only meaningful for CONFIG-origin events.
+}

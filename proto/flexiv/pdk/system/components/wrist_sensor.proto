@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+message WristSensor {
+  string name           = 1; // [required] users' name, like "". must be unique within the system.
+  string manufacturer   = 2; // [required] From the list of saved wrist sensor, like "flexiv"
+  string model          = 3; // [required] From the list of saved wrist sensor, like "FT03-D1"
+  string parameter_name = 4; // [optional] Path to the wrist sensor driver parameter file.
+}

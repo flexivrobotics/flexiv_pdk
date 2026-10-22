@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package flexiv.pdk.scene.collision;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/scene/collision/collision_config.proto";
+import "google/protobuf/empty.proto";
+
+// Collision configuration service
+service CollisionService {
+  // Basic operations
+  rpc Get(                     NameRequest) returns (           GetResponse);
+  rpc Save(                    SaveRequest) returns (          SaveResponse);
+  rpc Remove(                  NameRequest) returns (        RemoveResponse);
+  rpc Rename(                RenameRequest) returns (        RenameResponse);
+  rpc Exists(                  NameRequest) returns (        ExistsResponse);
+  rpc List(          google.protobuf.Empty) returns (          ListResponse);
+  
+  // CollisionConfig field operations
+  rpc AddPair(              AddPairRequest) returns (       AddPairResponse);
+  rpc RemovePair(        RemovePairRequest) returns (    RemovePairResponse);
+
+  // List all valid component names for collision pairs (objects and system components)
+  rpc ListComponents(google.protobuf.Empty) returns (ListComponentsResponse);
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request to get a collision config
+message NameRequest { string name = 1; }
+
+// Response containing collision config data
+message GetResponse {
+  common.Status status = 1;
+  CollisionConfig collision_config = 2;
+}
+
+// Request to save a collision config
+message SaveRequest { CollisionConfig collision_config = 1; }
+
+// Response from saving a collision config
+message SaveResponse { common.Status status = 1; }
+
+// Response from removing a collision config
+message RemoveResponse { common.Status status = 1; }
+
+// Request to rename a collision config
+message RenameRequest {
+  string old_name = 1;
+  string new_name = 2;
+}
+
+// Response from renaming a collision config
+message RenameResponse { common.Status status = 1; }
+
+// Response indicating if collision config exists
+message ExistsResponse {
+  common.Status status = 1;
+  bool          exists = 2;
+}
+
+// Response containing all collision config names
+message ListResponse {
+  common.Status   status = 1;
+  repeated string names  = 2;
+}
+
+// Response containing all valid component names for collision pairs
+message ListComponentsResponse {
+  common.Status   status = 1;
+  repeated string names  = 2;
+}
+
+// Request to add a collision pair to a collision config
+message AddPairRequest {
+  string        name = 1; // CollisionConfig name
+  CollisionPair pair = 2;
+}
+
+// Response from adding a collision pair
+message AddPairResponse {
+  common.Status status = 1;
+}
+
+// Request to remove a collision pair from a collision config
+message RemovePairRequest {
+  string        name = 1; // CollisionConfig name
+  CollisionPair pair = 2;
+}
+
+// Response from removing a collision pair
+message RemovePairResponse {
+  common.Status status = 1;
+}

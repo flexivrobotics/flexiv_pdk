@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+import "flexiv/pdk/spatial/geometry.proto";
+import "flexiv/pdk/spatial/shape.proto";
+import "flexiv/pdk/physics/properties.proto";
+
+// Custom tool. Can be used in System.
+// Get a list of all saved custom tool using: ComponentsService.ListCustomTool
+message CustomTool {
+  string                     manufacturer = 1; // [required] From the list of saved custom tools
+  string                     model        = 2; // [required] From the list of saved custom tools
+  spatial.SE3Pose            tcp          = 3; // [required] tool control point relative to tool base.
+  physics.Inertial           inertial     = 4; // [optional] Default is 0.
+  repeated spatial.Collision collision    = 5; // [optional] Default is no collision.
+  repeated spatial.Visual    visual       = 6; // [optional] Default is no visual.
+}

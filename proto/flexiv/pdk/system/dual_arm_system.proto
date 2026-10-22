@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package flexiv.pdk.system;
+
+import "flexiv/pdk/config_header.proto";
+import "flexiv/pdk/system/components/external_axis.proto";
+import "flexiv/pdk/system/components/manipulator.proto";
+import "flexiv/pdk/system/components/tool.proto";
+import "flexiv/pdk/system/components/tool_adapter.proto";
+import "flexiv/pdk/system/components/external_workpiece.proto";
+import "flexiv/pdk/system/components/wrist_sensor.proto";
+
+// The header places the system: its base sits at pose_in_parent in the parent frame. The server
+// converts that pose to the world once, when the system is saved, so the system does not follow
+// its parent if the parent moves later. ConfigService.Get returns parent "world" and the pose in
+// the world. The parent cannot be the system itself, one of its links, or a frame attached to
+// them.
+message DualArmSystem {
+  reserved 3;
+  reserved "system_mount";
+
+  ConfigHeader  header                    =  1; // [required] system name, parent and pose in parent
+  string        control_box_serial_number =  2; // [required] Control box engineering sn, like "CX01-01-T1-000001"
+  components.ExternalAxis  external_robot_axis       =  4; // [required] Actuated torso or unactuated fixture, containing 2 flanges.
+  components.Manipulator   left_arm                  =  6; // [required] Mounted on external_robot_axis left flange.
+  components.WristSensor   left_wrist_sensor         =  7; // [optional] Default is no wrist sensor.
+  components.ToolAdapter   left_tool_adapter         =  8; // [optional] Default is no tool adapter.
+  repeated components.Tool left_tool                 =  9; // [optional] Default is no tool.
+  components.Manipulator   right_arm                 = 11; // [required] Mounted on external_robot_axis right flange.
+  components.WristSensor   right_wrist_sensor        = 12; // [optional] Default is no wrist sensor.
+  components.ToolAdapter   right_tool_adapter        = 13; // [optional] Default is no tool adapter.
+  repeated components.Tool right_tool                = 14; // [optional] Default is no tool.
+  bool          remove_arm_base_link      = 15; // [optional] Remove the arm base link shell before mounting. Default is false. 
+
+  // [optional] Actuated device that can move workpieces, independent of the arm. Default is no external workpiece.
+  repeated components.ExternalWorkpiece external_workpiece = 16;
+}

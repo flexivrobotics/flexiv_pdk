@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package flexiv.pdk.spatial;
+
+enum FrameType {
+  FRAME_TYPE_UNKNOWN                  =  0;
+  FRAME_TYPE_CAMERA                   =  1;
+  FRAME_TYPE_COORDINATE               =  2;
+  FRAME_TYPE_SURFACE_PATH_ROOT        =  3;
+  FRAME_TYPE_SURFACE_PATH_WAYPOINT    =  4;
+  FRAME_TYPE_OBJECT                   =  5;
+  FRAME_TYPE_OBJECT_PATTERN_ROOT      =  6;
+  FRAME_TYPE_OBJECT_PATTERN_INSTANCE  =  7;
+  FRAME_TYPE_P2P_PATH_ROOT            =  8; // point-to-point path
+  FRAME_TYPE_P2P_PATH_WAYPOINT        =  9; // point-to-point path waypoint
+  FRAME_TYPE_SYSTEM_ROOT              = 10;
+  FRAME_TYPE_SYSTEM_LINK              = 11;
+  FRAME_TYPE_TCP                      = 12;
+  FRAME_TYPE_GRASP_POSE               = 13;
+  FRAME_TYPE_OBJECT_POSE              = 14;
+  FRAME_TYPE_SYSTEM_POSE              = 15;
+}
+
+// Policy for rpc SetParent
+enum ParentingPolicy {
+  PARENTING_PRESERVE_WORLD = 0; // Preserve world pose. Local pose is recalculated.
+  PARENTING_PRESERVE_LOCAL = 1; // Preserve local pose in parent. 
+                                // Frame moves in world. Children move also.
+  PARENTING_PRESERVE_LOCAL_FIX_CHILDREN = 2; // Preserve local pose in parent.
+                                             // Frame moves in world. Children preserve world pose.
+}
+
+// Reference frame for rpc GetFrame
+enum ReferenceFrame {
+  REFERENCE_FRAME_WORLD  = 0;  // Get pose in world coordinates
+  REFERENCE_FRAME_PARENT = 1; // Get pose in parent coordinates
+  REFERENCE_FRAME_NAMED  = 2;  // Get pose in a named frame
+}

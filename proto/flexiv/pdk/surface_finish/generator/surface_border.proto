@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish.generator;
+
+import "flexiv/pdk/spatial/geometry.proto";
+
+message EdgeBorder {
+  repeated double width = 1; // buffer distance around edges [m]
+  repeated string edges = 2; // list of occt edges to avoid (serialized)
+}
+
+message PolygonBorder {
+  repeated spatial.Vector3 points = 1; // list of points on faces [m]
+}

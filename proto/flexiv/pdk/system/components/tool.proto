@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+message Tool {
+  string name                   = 1; // [required] users' name, like "sander". must be unique within the system.
+  string manufacturer           = 2; // [required] From the list of saved tools, like "Mirka"
+  string model                  = 3; // [required] From the list of saved tools, like "AIROS-550CV"
+  repeated float home_position  = 4; // [optional] initial position.
+}

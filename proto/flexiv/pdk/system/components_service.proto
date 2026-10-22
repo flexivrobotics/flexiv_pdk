@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package flexiv.pdk.system;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/system/components/custom_tool.proto";
+import "flexiv/pdk/system/components/custom_tool_adapter.proto";
+import "google/protobuf/empty.proto";
+
+service ComponentsService {
+
+  // List available components that can be used to create a system
+
+  rpc ListManipulators(                google.protobuf.Empty) returns (         ListComponentsResponse); // List available manipulators
+  rpc ListToolAdapters(                google.protobuf.Empty) returns (  ListManufacturerModelResponse); // List available tool adapters
+  rpc ListTools(                       google.protobuf.Empty) returns (  ListManufacturerModelResponse); // List available tools
+  rpc ListCustomToolAdapters(          google.protobuf.Empty) returns (  ListManufacturerModelResponse); // List available custom tool adapters
+  rpc ListCustomTools(                 google.protobuf.Empty) returns (  ListManufacturerModelResponse); // List available custom tools
+  rpc ListExternalRobotAxes(           google.protobuf.Empty) returns (  ListManufacturerModelResponse); // List available external robot axes
+  rpc ListExternalWorkpieceAxes(       google.protobuf.Empty) returns (  ListManufacturerModelResponse); // List available external workpiece axes
+
+  // Add or remove custom components to the available components list
+
+  rpc SaveCustomTool(                  SaveCustomToolRequest) returns (         SaveCustomToolResponse); // Save custom tool to available custom tools list
+  rpc SaveCustomToolAdapter(    SaveCustomToolAdapterRequest) returns (  SaveCustomToolAdapterResponse); // Save custom tool adapter to available custom tool adapters list
+  rpc RemoveCustomTool(                    ManufacturerModel) returns (       RemoveCustomToolResponse); // Remove custom tool from available custom tools list
+  rpc RemoveCustomToolAdapter(             ManufacturerModel) returns (RemoveCustomToolAdapterResponse); // Remove custom tool adapter from available custom tool adapters list
+
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Response containing list of component names
+message ListComponentsResponse {
+  common.Status   status = 1;
+  repeated string names  = 2;
+}
+
+// Manufacturer and model pair
+message ManufacturerModel {
+  string manufacturer = 1;
+  string model        = 2;
+}
+
+// Response containing list of manufacturer/model pairs
+message ListManufacturerModelResponse {
+  common.Status              status = 1;
+  repeated ManufacturerModel items  = 2;
+}
+
+// Request to save custom tool
+message SaveCustomToolRequest {
+  components.CustomTool custom_tool = 1;
+}
+
+// Response from saving custom tool
+message SaveCustomToolResponse {
+  common.Status status = 1;
+}
+
+// Response from removing custom tool
+message RemoveCustomToolResponse {
+  common.Status status = 1;
+}
+
+// Response from removing custom tool adapter
+message RemoveCustomToolAdapterResponse {
+  common.Status status = 1;
+}
+
+// Request to save custom tool adapter
+message SaveCustomToolAdapterRequest {
+  components.CustomToolAdapter custom_tool_adapter = 1;
+}
+
+// Response from saving custom tool adapter
+message SaveCustomToolAdapterResponse {
+  common.Status status = 1;
+}

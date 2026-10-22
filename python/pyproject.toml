@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flexivpdk"
+description = "Python SDK for Flexiv Nebula scene, surface finish and manipulation services"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [
+    {name = "Flexiv Robotics", email = "use-github-issues-instead-of-email@flexiv.com"}
+]
+keywords = ["flexiv", "pdk", "robotics", "grpc", "surface-finish", "manipulation"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering",
+]
+
+# This pulls the version dynamically from flexiv_pdk/python/flexiv/pdk/__init__.py
+dynamic = ["version"]
+
+dependencies = [
+    "numpy>=1.20.0",
+    "scipy>=1.7.0",
+    # Floors set by the stubs from grpcio-tools in generate_protos.sh; checked by build_wheel.sh
+    "protobuf>=7.35.1",
+    "grpcio>=1.84.0",
+    "click>=8.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/flexivrobotics/flexiv_pdk"
+"Bug Tracker" = "https://github.com/flexivrobotics/flexiv_pdk/issues"
+Documentation = "https://flexivrobotics.github.io/flexiv_pdk/"
+
+[project.scripts]
+# Terminal commands for humans and AI agents
+pdk-scene = "flexiv.pdk.cli.main:pdk_scene"
+
+[tool.setuptools.packages.find]
+# Discover implicit namespace packages under flexiv (e.g. flexiv.pdk.*)
+namespaces = true
+include = ["flexiv*"]
+
+[tool.setuptools.dynamic]
+# Links the project version to the __version__ string in your source
+version = {attr = "flexiv.pdk.__version__"}

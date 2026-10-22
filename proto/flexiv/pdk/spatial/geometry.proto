@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package flexiv.pdk.spatial;
+
+message Vector3 {
+  double x = 1; // [required]
+  double y = 2; // [required]
+  double z = 3; // [required]
+}
+
+message Quaternion {
+  double x = 1; // [required]
+  double y = 2; // [required]
+  double z = 3; // [required]
+  double w = 4; // [required]
+}
+
+message SE3Pose {
+  Vector3    position = 1; // [required] (m)
+  Quaternion rotation = 2; // [required] 
+}
+
+message Wrench {
+  Vector3 force  = 1; // [required] (N)
+  Vector3 torque = 2; // [required] (Nm)
+}

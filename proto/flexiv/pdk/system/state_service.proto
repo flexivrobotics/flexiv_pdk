@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package flexiv.pdk.system;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/system/components/joint_group.proto";
+
+// Joint positions of the systems in the scene right now. These are the
+// positions that planning, collision checks and the frames of each system use.
+//
+// A system starts at the home position saved in its config (see ConfigService)
+// when it is added or its configuration changes. Changes made here take effect
+// immediately and are not saved.
+//
+// This is the scene, not a robot: moving a real or simulated robot is done
+// with the Flexiv RDK.
+service StateService {
+  rpc GetJointPosition(GetJointPositionRequest) returns (GetJointPositionResponse);
+  rpc SetJointPosition(SetJointPositionRequest) returns (SetJointPositionResponse);
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request for the joint positions of one joint group of a system
+message GetJointPositionRequest {
+  string                system_name = 1; // [required]
+  components.JointGroup joint_group = 2; // [optional] Default is all actuated joints of the system.
+}
+
+// Response containing the joint positions of the joint group
+message GetJointPositionResponse {
+  common.Status   status         = 1;
+  repeated double joint_position = 2; // [rad] or [m]
+}
+
+// Request to move one joint group of a system in the scene, without saving
+message SetJointPositionRequest {
+  string                system_name    = 1; // [required]
+  components.JointGroup joint_group    = 2; // [optional] Default is all actuated joints of the system.
+  repeated double       joint_position = 3; // [required] One value per joint in the group. [rad] or [m]
+}
+
+// Response from moving the joint group
+message SetJointPositionResponse {
+  common.Status status = 1;
+}

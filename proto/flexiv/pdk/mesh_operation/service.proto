@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package flexiv.pdk;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/spatial/geometry.proto";
+import "flexiv/pdk/mesh_operation/filter/parameters.proto";
+import "flexiv/pdk/mesh_operation/area_filter/parameters.proto";
+
+// Mesh operation service, which provides mesh processing operations
+service MeshOperationService {
+  // Area extraction operations
+  rpc ExtractArea(AreaExtractionRequest)        returns (AreaExtractionResponse);
+
+  // Filter mesh operations
+  rpc FilterMesh(FilterMeshRequest)                 returns (FilterMeshResponse);
+}
+
+// =======================================================
+// DEFINITIONS
+// =======================================================
+
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+// Request to extract area from mesh
+message AreaExtractionRequest {
+  // The name of the object to extract area from
+  string object_name = 1;
+
+  // The name of the extracted area to be saved as
+  string extracted_object_name = 2;
+
+  // Optional. Mesh filename associated with the mesh, if the object has more than one visual mesh.
+  string mesh_filename = 3; 
+
+  // Boundary of the area to be extracted, in the form of a polygon. Points has to be on the surface of the mesh with a tolerance of maximum 1mm
+  repeated spatial.Vector3 boundary = 4;
+}
+
+// Response from area extraction operation
+message AreaExtractionResponse {
+  common.Status status = 1;
+}
+
+// Request to perform mesh operations
+message FilterMeshRequest {
+  // The name of the source object
+  string object_name    = 1;         
+  
+  // The name prefix of the filtered object to be saved as. If there is only a single filtered mesh, then this will be the name of the filtered object.
+  string filtered_object_name_prefix  = 2;
+
+  // Optional. Mesh filename associated with the mesh, if the object has more than one visual mesh.
+  string mesh_filename = 3; 
+
+  oneof filter {
+    // Smooth mesh filter, used to smooth a noisy mesh (ex. reconstructed mesh)
+    mesh_operation.filter.SmoothMesh smooth_mesh = 4;
+
+    // Largest region filter, used to remove small speckles from noisy mesh (ex. reconstructed mesh)
+    mesh_operation.filter.LargestRegion largest_region = 5;
+
+    // Bounding box filter, used to extract mesh within a region of interest
+    mesh_operation.filter.BoundingBox bounding_box = 6;
+
+    // Fill holes filter, used to patch holes in the mesh
+    mesh_operation.filter.FillHoles fill_holes = 7;
+
+    // Sharpen filter, used to sharpen edge features in the mesh
+    mesh_operation.filter.Sharpen sharpen = 8;
+
+    // Minimum surface area filter, used to remove regions on mesh which are smaller than the specified area
+    mesh_operation.filter.MinimumSurfaceArea minimum_surface_area = 9;
+
+    // Uniform resampling filter, used to up sample a mesh, usually mesh obtained from cad
+    mesh_operation.filter.UniformResampling uniform_resampling = 10;
+
+    // Area mesh filter: bump/valley removal, used to remove high curvature regions from a mesh
+    mesh_operation.area_filter.BumpValleyRemoval bump_valley_removal = 11;
+
+    // Area mesh filter: border offset, used to shrink the mesh along its border by a specified length
+    mesh_operation.area_filter.BorderOffset border_offset = 12;
+
+    // Area mesh filter: reachability removal, used to extract regions of a mesh which are reachability by a specified system
+    mesh_operation.area_filter.ReachabilityRemoval reachability_removal = 13;
+
+    // Area mesh filter: region division, used to divide a mesh into rectangular regions with specified length and width
+    mesh_operation.area_filter.RegionDivision region_division = 14;
+  }
+}
+
+// Response from point to point path planning
+message FilterMeshResponse {
+  common.Status status = 1;
+
+  // List of generated filtered object names
+  repeated string filtered_object_names = 2;
+}

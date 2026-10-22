@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package flexiv.pdk.system;
+
+import "flexiv/pdk/common/status.proto";
+
+// System-level operations on systems in the scene. These are neither generic
+// scene config (see ConfigService) nor available-component listings (see
+// ComponentsService).
+service SystemService {
+
+  // Add a system by connecting to a physical robot. The server connects to the
+  // robot identified by the given serial number, reads its configuration, and
+  // saves it as a system in the active workcell under the given name. After a
+  // successful response the client should load the system from the config server.
+  rpc AddConnectedSystem(AddConnectedSystemRequest) returns (AddConnectedSystemResponse);
+
+  // Get whether a calibration exists for the system's manipulator and was applied.
+  rpc GetCalibrationStatus(GetCalibrationStatusRequest) returns (GetCalibrationStatusResponse);
+
+  // Get details about systems already in scene
+
+  rpc GetUrdf(                     GetUrdfRequest) returns (           GetUrdfResponse); // Get URDF of an existing system
+  rpc GetArmSerialNumber(GetArmSerialNumberRequest) returns (GetArmSerialNumberResponse); // Get arm serial number of an existing system
+
+  // Joint positions of a system in the scene are in StateService.
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request to add a system by connecting to a physical robot
+message AddConnectedSystemRequest {
+  string name          = 1; // Name to give the system in the active workcell
+  string serial_number = 2; // Serial number of the robot to connect to
+}
+
+// Response from adding a connected system
+message AddConnectedSystemResponse {
+  common.Status status = 1;
+}
+
+// Request to get calibration status
+message GetCalibrationStatusRequest {
+  string system_name = 1; // Name of the system
+}
+
+// Response containing calibration status
+message GetCalibrationStatusResponse {
+  common.Status status     = 1;
+  bool          calibrated = 2; // Whether calibration exists and was applied
+}
+
+// Request to get URDF content
+message GetUrdfRequest {
+  string name = 1;
+}
+
+// Response containing URDF content
+message GetUrdfResponse {
+  common.Status status       = 1;
+  string        urdf_content = 2;
+}
+
+// Request to get arm serial number
+message GetArmSerialNumberRequest {
+  string system_name = 1; // Name of the system
+}
+
+// Response containing arm serial number
+message GetArmSerialNumberResponse {
+  common.Status status                   = 1;
+  string        arm_serial_number        = 2;
+  string        arm_public_serial_number = 3;
+}

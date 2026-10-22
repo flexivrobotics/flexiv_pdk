@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package flexiv.pdk.spatial;
+
+import "flexiv/pdk/spatial/geometry.proto";
+
+// Similar to URDF <collision>
+message Collision {
+  SE3Pose origin = 2; // [required] Default is 0 position, identity rotation
+  Shape   shape  = 3; // [required]
+}
+
+// Similar to URDF <visual>
+message Visual {
+  SE3Pose  origin        = 2; // [required]
+  Shape    shape         = 3; // [required]
+  string   material_name = 4; // [optional] Name of the material. Default is material.name.
+  Material material      = 5; // [optional] Color of the visual. Default is the viewer's own color.
+}
+
+// Similar to URDF <geometry> or 
+message Shape {
+  oneof type {
+    Box        box         = 1;
+    Capsule    capsule     = 2;
+    Cylinder   cylinder    = 3;
+    Sphere     sphere      = 4;
+    ConvexMesh convex_mesh = 5;
+    Mesh       mesh        = 6;
+    Octomap    octomap     = 7;
+  }
+}
+
+// Similar to URDF <material>
+message Material {
+  string          name    = 1; // [optional] Default is a name the server chooses.
+  repeated double rgba    = 2; // [required] Red, green, blue and alpha, each in the range [0,1]
+  string          texture = 3; // [optional] Texture filename. Not supported yet.
+}
+
+// Similar to URDF <geometry><box>
+message Box {
+  repeated double size = 1;  // [required] x, y, z in (m)
+}
+
+message Capsule {
+  double radius = 1;  // [required] (m)
+  double length = 2;  // [required] (m)
+}
+
+// Similar to URDF <geometry><cylinder>
+message Cylinder {
+  double radius = 1;  // [required] (m)
+  double length = 2;  // [required] (m)
+}
+
+// Similar to URDF <geometry><sphere>
+message Sphere {
+  double radius = 1;  // [required] (m)
+}
+
+// Similar to URDF <geometry><mesh>
+message Mesh {
+  string  filename = 1; // [required] Path to mesh file
+  Vector3 scale    = 2; // [required] For no scaling, use [1, 1, 1]
+}
+
+// Similar to URDF <geometry><mesh>
+message ConvexMesh {
+  string  filename = 1; // [required] Path to mesh file
+  Vector3 scale    = 2; // [required] For no scaling, use [1, 1, 1]
+}
+
+message Octomap {
+  string filename   = 1; // [required] Path to mesh file
+  double resolution = 2; // [required] Size of the smallest voxel (m)
+}

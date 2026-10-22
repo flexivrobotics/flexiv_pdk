@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package flexiv.pdk.point_to_point_path;
+
+import "flexiv/pdk/config_header.proto";
+import "flexiv/pdk/spatial/waypoint.proto";
+
+// [output only] Path crated by the point-to-point path service
+message Path {
+
+  ConfigHeader                       header                 = 1; // name of path
+
+  string                             system_name            = 2; // [required] system that will run this point to point path
+  string                             tcp_name               = 3; // [required] tcp for forward kinematics to get the Cartesian waypoints
+  string                             collision_config_name  = 4; // [required] name of collision configuration   
+
+  // ECP only
+  string                             tcp_to_attach_object   = 5; // Tcp to attach object, for ECP trajectory only
+  string                             object_grasp_pose      = 6; // Grasp pose to attach/grasp ecp object
+
+  repeated spatial.CartesianWaypoint cartesian_waypoints    = 7; // [guaranteed] stage 1 generated waypoints      result
+  repeated spatial.JointWaypoint     joint_waypoints        = 8; // [conditional] stage 3 basic    motion planning result
+}

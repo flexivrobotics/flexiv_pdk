@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish;
+
+import "flexiv/pdk/spatial/geometry.proto";
+
+// Path modifier parameters.
+// Modifications are made in this order:
+// 1. Reverse waypoint order (no rotation)
+// 2. Align with previous waypoint (rotation about local z-axis)
+// 3. Rotate waypoints (rotation in local frame)
+// 4. Translate waypoints (translation in local frame)
+message PathRefinement {
+  bool               reversed_order      = 1; // [optional] Reverse the order of waypoints.
+  bool               align_with_previous = 2; // [optional] Rotate waypoints, so it is roughly aligned with previous waypoint
+  spatial.Quaternion rotation_offset     = 3; // [optional] Rotate each waypoint, in waypoint's frame
+  spatial.Vector3    position_offset     = 4; // [optional] Translate each waypoint, in waypoint's frame
+}

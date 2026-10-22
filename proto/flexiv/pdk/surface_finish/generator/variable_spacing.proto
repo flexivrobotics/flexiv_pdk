@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish.generator;
+
+// Variable waypoint spacing parameters
+message VariableSpacing {
+  double min_spacing           = 1; // minimum spacing between waypoints, associated with the same CAD feature
+  double max_spacing           = 2; // maximum spacing between waypoints, associated with the same CAD feature
+  double position_tolerance    = 3; // maximum position    error between waypoint and CAD feature
+  double orientation_tolerance = 4; // maximum orientation error between waypoint and CAD feature
+}

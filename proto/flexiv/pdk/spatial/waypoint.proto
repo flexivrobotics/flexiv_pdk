@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package flexiv.pdk.spatial;
+
+import "flexiv/pdk/spatial/geometry.proto";
+
+// ===============================
+//        Cartesian Waypoint
+// ===============================
+
+message CartesianWaypoint {
+  spatial.SE3Pose    pose                    = 1; // [required] pose
+  double             velocity                = 2; // [required] linear velocity
+  double             acceleration            = 3; // [required] linear acceleration 
+  spatial.Wrench     wrench                  = 4; // [required] desired force/torque to apply to surface when in contact
+  NullSpace          null_space              = 5; // [required] 
+}
+
+message NullSpace {
+  double          elbow_swivel_angle          = 1; // [required] arm joint 2 angle
+  repeated double external_robot_position     = 2; // [required] joint position of the external robot axis
+  repeated double external_workpiece_position = 3; // [required] joint position of the external workpiece axis
+}
+
+// =================================
+//        Joint Waypoint
+// =================================
+message JointWaypoint {
+  repeated double position = 1; // [required] system joint position
+  repeated double velocity = 2; // [required] system joint velocity
+}
+

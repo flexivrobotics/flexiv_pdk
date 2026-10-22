@@ -1,0 +1,42 @@
+# CMake build and install directories
+cpp/build/
+cpp/install/
+
+# Doxygen documentation
+doc/html/
+
+# gRPC/Protobuf generated files
+*_pb2.py
+*_pb2_grpc.py
+
+# Machine identifiers and licenses written by "pdk-scene license"
+license_identifier.txt
+*.lic
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+pip-wheel-metadata/
+dist/
+
+# IDE/editor specific files
+.vscode
+
+**/install/
+**/build/
+
+# Copied from the repo root by build_wheel.sh
+python/LICENSE
+
+# Release outputs
+*.whl
+libflexiv_pdk*.so
+server/.server.conf
+server/scripts/docker_exec_script_pid.txt
+
+# Sphinx build output for the user manual
+doc/manual/_build/

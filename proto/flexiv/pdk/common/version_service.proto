@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package flexiv.pdk.common;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/common/version.proto";
+
+// The server's version, and whether a client works with it. A client and
+// server are compatible when their major and minor versions match.
+//
+// Needs no active workcell.
+service VersionService {
+  rpc GetVersion(GetVersionRequest) returns (GetVersionResponse);
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request for the server version
+message GetVersionRequest {
+  Version client_version = 1; // [optional] Needed for compatible to be set.
+}
+
+// Response containing the server version
+message GetVersionResponse {
+  common.Status status         = 1;
+  Version       server_version = 2;
+  bool          compatible     = 3; // True when client_version was given and works with this server.
+}

@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish.generator;
+
+import "flexiv/pdk/spatial/geometry.proto";
+import "flexiv/pdk/surface_finish/generator/variable_spacing.proto";
+
+// Parameters to create a path by sampling waypoints on a mesh, between given points on the mesh.
+//
+// Add the mesh to the Flexiv PDK scene: 
+// 1. Create flexiv.pdk.scene.Object
+// 2. Add a flexiv.pdk.spatial.visual to the object
+// 3. Set visual.shape.mesh to the mesh file
+// 4. Add the object to scene using flexiv.pdk.scene.ConfigService.Add()
+//
+// Use the SurfaceFinishService to generate the path, refine the path, and create robot motion.
+message MeshSketchPath {
+  string                   mesh_filename    = 1; // Optional. Mesh filename associated with the mesh, if parent has more than one visual mesh.
+  repeated spatial.Vector3 points           = 2; // list of points on faces, expressed in parent frame, to sample waypoints on the mesh. The points must be on the mesh surface.
+  double                   blending_radius  = 3; // blending radius between path segment [m]  
+
+  oneof waypoint_spacing {
+    double                 fixed_spacing    = 4; // fixed distance between waypoints [m]
+    VariableSpacing        variable_spacing = 5;
+  }
+
+  // Orientation alignment options for the generated waypoints.
+  oneof orientation_alignment {
+    // Rotate waypoints, so that its x-axis is roughly aligned with the direction between the first two waypoints
+    bool               align_with_initial_direction = 11; 
+
+    // Rotate waypoints, so that its x-axis is roughly aligned with previous waypoint
+    bool               align_with_previous          = 12; 
+
+    // Rotate waypoints so that the x-axis is roughly aligned with this direction in world frame
+    spatial.Vector3    align_with_direction         = 13; 
+  }
+}

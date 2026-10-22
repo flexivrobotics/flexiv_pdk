@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package flexiv.pdk.scene.reconstruction;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/config_header.proto";
+import "google/protobuf/empty.proto";
+import "flexiv/pdk/scene/reconstruction/config.proto";
+
+// Reconstruction service
+service ReconstructionService {
+
+  // Basic operations
+  rpc StartReconstruction(StartReconstructionRequest)                 returns (common.Status);
+  rpc AddCameraToReconstruction(CameraNamesRequest)                   returns (common.Status);
+  rpc RemoveCameraFromReconstruction(CameraNamesRequest)              returns (common.Status);
+  rpc StopReconstruction(google.protobuf.Empty)                       returns (common.Status);
+  rpc GetReconstructionResult(ReconstructionResultRequest)            returns (ReconstructionResultResponse);
+  rpc ListReconstructionObjects(google.protobuf.Empty)                returns (ListReconstructionObjectsResponse);
+
+  // ReconstructionConfig operations
+  rpc AddReconstructionConfig(ReconstructionConfig)                   returns (common.Status);
+  rpc RemoveReconstructionConfig(ReconstructionConfig)                returns (common.Status);
+  rpc GetReconstructionConfig(GetReconstructionConfigRequest)         returns (GetReconstructionConfigResponse);
+  rpc ListReconstructionConfigs(google.protobuf.Empty)                returns (ListReconstructionConfigsResponse);
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+// Request message for starting reconstruction
+message StartReconstructionRequest {
+  // Format of the reconstruction result (e.g., point cloud, mesh, etc.)
+  string result_format = 1;
+
+  // Frequency of publishing reconstruction result
+  float publish_frequency = 2;
+
+  // Optional: Name of the reconstruction config to use for this reconstruction. If not provided, the default config will be used.
+  string reconstruction_config_name = 3;
+}
+
+// Request message for adding camera(s) to reconstruction
+message CameraNamesRequest {
+  repeated string camera_names = 1;
+}
+
+message ReconstructionResultRequest {
+  ConfigHeader header = 1;
+
+  bool add_to_scene = 2;            // If true, add the new reconstruction result to the existing scene. If false, do not add it to the scene.
+  bool replace_existing_object = 3; // If true, replace the existing reconstruction result with the new one. If false, append the new result to the existing one.
+}
+
+// Response message for getting reconstruction result
+message ReconstructionResultResponse {
+  // Status of the reconstruction result retrieval
+  common.Status status = 1;  
+}
+
+// Response message for listing available reconstruction objects
+message ListReconstructionObjectsResponse {
+  // Status of the reconstruction objects listing
+  common.Status status = 1;
+  // List of available reconstruction objects
+  repeated ReconstructionObject objects = 2;
+}
+
+// Request message for getting a reconstruction config
+message GetReconstructionConfigRequest {
+  // Name of the reconstruction config to retrieve
+  string name = 1;
+}
+
+// Response message for getting a reconstruction config
+message GetReconstructionConfigResponse {
+  // Status of the reconstruction config retrieval
+  common.Status status = 1;
+  // The requested reconstruction config
+  ReconstructionConfig config = 2;
+}
+
+// Response message for listing available reconstruction configs
+message ListReconstructionConfigsResponse {
+  // Status of the reconstruction configs listing
+  common.Status status = 1;
+  // List of available reconstruction configs
+  repeated string config_names = 2;
+}
+
+// A single available reconstruction object
+message ReconstructionObject {
+  // Name of the reconstruction object
+  string name = 1;
+  // Format of the reconstruction object (e.g., point cloud, mesh, etc.)
+  string result_format = 2;
+}

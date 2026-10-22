@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package flexiv.pdk.scene;
+
+import "flexiv/pdk/spatial/geometry.proto";
+import "flexiv/pdk/config_header.proto";
+
+// Similar to URDF <link>
+message Coordinate {
+  ConfigHeader    header = 1; // [required]
+  spatial.Vector3 scale  = 2; // [optional] Size of the coordinate in meters. Default is ?.
+}

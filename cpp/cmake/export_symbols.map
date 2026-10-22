@@ -1,0 +1,41 @@
+# Linker version script (GNU ld / lld) for the shared libflexiv_pdk.so.
+#
+# Only the flexiv::pdk API and the protobuf/gRPC code generated from its
+# .proto files are exported. Every template instantiation of gRPC, protobuf or
+# the standard library that the library happens to emit is demoted to a local
+# symbol, so it cannot interpose a consumer's own instantiation of the same
+# template, compiled against different headers.
+#
+# Protobuf and gRPC themselves stay external: their types appear in the public
+# API, so a consumer links the same libprotobuf and libgrpc++ the library was
+# built against.
+{
+  global:
+    # Itanium C++ ABI mangled names under namespace flexiv (6flexiv):
+    #   functions, methods and data
+    _ZN6flexiv*;
+    _ZNK6flexiv*;
+    #   vtables, VTT, typeinfo, typeinfo names
+    _ZTVN6flexiv*;
+    _ZTTN6flexiv*;
+    _ZTIN6flexiv*;
+    _ZTSN6flexiv*;
+    #   static locals and their guard variables in flexiv inline functions
+    _ZZN6flexiv*;
+    _ZZNK6flexiv*;
+    _ZGVZN6flexiv*;
+    _ZGVZNK6flexiv*;
+    # Out-of-line protobuf factories specialized for the generated messages,
+    # called from the inline accessors in the *.pb.h headers.
+    _ZN6google8protobuf5Arena18CreateMaybeMessageIN6flexiv*;
+    # Per-file tables of the generated messages: descriptor_table_*, scc_info_*
+    # and TableStruct_*, named after the flexiv/pdk/*.proto they come from.
+    *flexiv_2fpdk_2f*;
+    # Demangled backup match (GNU ld understands extern "C++" globbing).
+    extern "C++" {
+      "flexiv::*";
+    };
+
+  local:
+    *;
+};

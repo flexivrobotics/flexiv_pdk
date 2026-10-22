@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package flexiv.pdk.camera;
+
+import "flexiv/pdk/common/status.proto";
+
+// Camera service
+service CameraService {
+
+  // Basic point to point path planning operations
+  rpc IsCameraOnline(CameraNameRequest)                returns (CameraOnlineResponse);
+
+  // Get camera intrinsic parameters
+  rpc UpdateCameraIntrinsicFromDevice(CameraNameRequest)          returns (UpdateCameraIntrinsicFromDeviceResponse);
+
+  // Get camera rgbd image
+  rpc GetCameraRGBDImage(CameraRGBDImageRequest)            returns (CameraRGBDImageResponse);
+
+  // Get camera point cloud
+  rpc GetCameraPointCloud(CameraPointCloudRequest)           returns (CameraPointCloudResponse);
+
+  // List all saved images for a given camera
+  rpc ListSavedCameraImages(CameraNameRequest)              returns (CameraImageListResponse);
+
+  // List all saved point clouds for a given camera
+  rpc ListSavedCameraPointClouds(CameraNameRequest)         returns (CameraPointCloudListResponse);
+
+  // Delete a saved image for a given camera
+  rpc DeleteSavedCameraImage(CameraImageDeleteRequest)      returns (common.Status); 
+
+  // Delete a saved point cloud for a given camera
+  rpc DeleteSavedCameraPointCloud(CameraPointCloudDeleteRequest) returns (common.Status);
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request for camera name
+message CameraNameRequest {
+  // Camera name
+  string camera_name = 1;
+}
+
+// Response from camera online check
+message CameraOnlineResponse {
+  common.Status status = 1;
+  bool online = 2;
+}
+
+// Response from get camera intrinsics
+message UpdateCameraIntrinsicFromDeviceResponse {
+  common.Status status = 1;
+  float fx = 2;
+  float fy = 3;
+  float cx = 4;
+  float cy = 5;
+  repeated float distortion_coeffs = 6;
+}
+
+// Request for camera rgbd image
+message CameraRGBDImageRequest {
+  // Camera name
+  string camera_name = 1;
+
+  // File name to save the rgbd image to. If empty, the image will not be saved to disk.
+  string save_file_name = 2;
+}
+
+// Response from get camera rgbd image
+message CameraRGBDImageResponse {
+  common.Status status = 1;
+}
+
+// Request for camera point cloud
+message CameraPointCloudRequest {
+  // Camera name
+  string camera_name = 1;
+
+  // Express the point cloud in camera frame or world frame
+  bool in_world_frame = 2;
+
+  // File name to save the point cloud to. If empty, the point cloud will not be saved to disk.
+  string save_file_name = 3;
+}
+
+// Response from get camera point cloud
+message CameraPointCloudResponse {
+  common.Status status = 1;
+}
+
+// Response from list saved camera images
+message CameraImageListResponse {
+  common.Status status = 1;
+  repeated string image_file_names = 2;
+}
+
+// Response from list saved camera point clouds
+message CameraPointCloudListResponse {
+  common.Status status = 1;
+  repeated string point_cloud_file_names = 2;
+}
+
+// Request for deleting a saved camera image
+message CameraImageDeleteRequest {
+  // Camera name
+  string camera_name = 1;
+  // File name of the image to delete
+  string image_file_name = 2;
+}
+
+// Request for deleting a saved camera point cloud
+message CameraPointCloudDeleteRequest {
+  // Camera name
+  string camera_name = 1;
+  // File name of the point cloud to delete
+  string point_cloud_file_name = 2;
+}

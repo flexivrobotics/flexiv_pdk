@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package flexiv.pdk.scene.reconstruction;
+
+// Reconstruction configuration
+message ReconstructionConfig {
+  string                name                = 1; // [required]
+  
+  int32                 point_cloud_size    = 2; // [required] default: 1000000
+  double                voxel_size          = 3; // [required] default: 0.005, in meters
+  int32                 voxel_bucket_count  = 4; // [required] default: 10000
+}

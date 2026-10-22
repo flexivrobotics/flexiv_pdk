@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package flexiv.pdk.spatial;
+
+import "flexiv/pdk/spatial/frame_defs.proto";
+import "flexiv/pdk/spatial/geometry.proto";
+
+// Frame data
+message Frame {
+  FrameType       type        = 1; // [required] 
+  SE3Pose         pose_world  = 2; // [required] Pose in world coordinates
+  SE3Pose         pose_parent = 3; // [required] Pose in parent coordinates
+  string          parent      = 4; // [required] Parent name
+  repeated string children    = 5; // [optional] Children names
+}

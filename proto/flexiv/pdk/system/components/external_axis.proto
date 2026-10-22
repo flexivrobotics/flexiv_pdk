@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+// External Axis
+// For example: linear rail, pan-tilt platform, rotary table
+// Get a list of all external axis using: ComponentsService.ListExternalRobotAxes
+// Get a list of amplifier model using: ComponentsService.ListExternalRobotAxes or ListExternalWorkpieceAxes
+message ExternalAxis {
+  string name                         =  1; // [required] Name like "linear-rail-x". Must be unique within the system.
+  string manufacturer                 =  2; // [required] From the list of external axis, like "Flexiv"
+  string model                        =  3; // [required] From the list of external axis, like "pan-tilt-platform-X2"
+  string amplifier_model              =  4; // [optional] Default is amplifier is auto selected.
+  repeated float rail_length          =  5; // [optional] for linear rail only. physical length.        [m]
+  repeated float position_lower_limit =  6; // [optional] joint position lower limit >= nominal limit.  [m,rad]
+  repeated float position_upper_limit =  7; // [optional] joint position upper limit <= nominal limit.  [m,rad]
+  repeated float velocity_limit       =  9; // [optional] joint velocity limit       <= nominal limit.  [m/s,rad/s]
+  repeated float effort_limit         = 10; // [optional] joint effort limit         <= nominal limit.  [N,Nm]
+  repeated float home_position        = 12; // [optional] initial position.                             [m,rad]
+  bool     apply_calibration          = 13; // [optional] try to connect the robot, get the calibration, and apply it to the server's model
+  repeated float position_offset      = 14; // [optional] joint position offset                         [m,rad]
+}

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+message Adapter {
+    string name               = 1; // [required] Name of this connection.
+    float mass                = 2; // [optional] Mass (kg) of the adapter. Default is 0. 
+    repeated float inertia    = 3; // [optional] Inertia of the adapter. Default is 0.
+    repeated float xyz        = 4; // [optional] Position (m) of child base_link frame in parent flange frame. Default is 0.
+    repeated float rpy        = 5; // [optional] Roll pitch yaw (rad) of child base_link frame in parent flange frame. Default is 0.
+    string parent_flange_name = 6; // [optional] Attach this adapter to the specified flange. Default is use the first found flange.
+}

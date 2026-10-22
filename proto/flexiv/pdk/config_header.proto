@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package flexiv.pdk;
+
+import "flexiv/pdk/spatial/geometry.proto";
+
+message ConfigHeader {
+  string          name           = 1; // [required] 
+  string          parent         = 2; // [required] parent name
+  spatial.SE3Pose pose_in_parent = 3; // [required] 
+}

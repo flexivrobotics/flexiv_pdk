@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package flexiv.pdk;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/spatial/frame.proto";
+import "flexiv/pdk/spatial/frame_defs.proto";
+import "flexiv/pdk/spatial/geometry.proto";
+
+// Live parents and poses of the frames in the scene: objects, cameras,
+// coordinates, paths and system links.
+//
+// Changes take effect immediately and are not saved. Reloading the workcell
+// returns each frame to the parent and pose saved in ConfigService; to change
+// those, use ConfigService.
+//
+// Change notifications are served by SceneEventService.WatchSceneEvents
+// (see scene_event_service.proto), not by this service.
+service FrameService {
+
+  // Basic operations
+
+  rpc Exists(       ExistsFrameRequest)  returns (    ExistsFrameResponse);
+  rpc Get(             GetFrameRequest)  returns (       GetFrameResponse);
+  rpc List(          ListFramesRequest)  returns (     ListFramesResponse);
+  rpc Remove(       RemoveFrameRequest)  returns (    RemoveFrameResponse);
+  rpc Rename(       RenameFrameRequest)  returns (    RenameFrameResponse);
+
+  // Current parent and pose. A pose is read or set in the world, in the parent,
+  // or in another named frame.
+
+  rpc GetParent( GetFrameParentRequest)  returns ( GetFrameParentResponse);
+  rpc SetParent( SetFrameParentRequest)  returns ( SetFrameParentResponse);
+
+  rpc GetPose(      GetFramePoseRequest) returns (   GetFramePoseResponse);
+  rpc UpdatePose(UpdateFramePoseRequest) returns (UpdateFramePoseResponse);
+
+  // Search operations
+
+  rpc HasParent(  HasFrameParentRequest) returns ( HasFrameParentResponse);
+  rpc HasChild(    HasFrameChildRequest) returns (  HasFrameChildResponse);
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request for frame operations
+message GetFrameRequest {
+  spatial.FrameType type = 1;
+  string            name = 2;
+}
+
+message RemoveFrameRequest {
+  spatial.FrameType type = 1;
+  string            name = 2;
+}
+
+message ExistsFrameRequest {
+  spatial.FrameType type = 1;
+  string            name = 2;
+}
+
+message GetFrameParentRequest {
+  spatial.FrameType type = 1;
+  string            name = 2;
+}
+
+// Response containing frame information
+message GetFrameResponse {
+  common.Status status = 1;
+  spatial.Frame frame  = 2;
+}
+
+// Response from removing object
+message RemoveFrameResponse { common.Status status = 1; }
+
+// Request to rename object
+message RenameFrameRequest {
+  spatial.FrameType type     = 1;
+  string            old_name = 2;
+  string            new_name = 3;
+}
+
+// Response from renaming object
+message RenameFrameResponse { common.Status status = 1; }
+
+// Response indicating if frame exists
+message ExistsFrameResponse {
+  common.Status status = 1;
+  bool          exists = 2;
+}
+
+// Request to list all frame names
+message ListFramesRequest { spatial.FrameType type = 1; }
+
+// Response containing all frame names
+message ListFramesResponse {
+  common.Status   status = 1;
+  repeated string names  = 2;
+}
+
+// Response containing the current parent
+message GetFrameParentResponse {
+  common.Status status      = 1;
+  string        parent_name = 2;
+}
+
+// Request to change the current parent, without saving
+message SetFrameParentRequest {
+  spatial.FrameType       type        = 1;
+  string                  name        = 2;
+  string                  parent_name = 3;
+  spatial.ParentingPolicy policy      = 4;
+}
+
+// Request for the current pose of a frame
+message GetFramePoseRequest {
+  spatial.FrameType      type           = 1;
+  string                 name           = 2;
+  spatial.ReferenceFrame reference      = 3;
+  string                 reference_name = 4; // Required when frame is REFERENCE_FRAME_NAMED
+}
+
+// Response containing the current pose
+message GetFramePoseResponse {
+  common.Status   status = 1;
+  spatial.SE3Pose pose   = 2;
+}
+
+// Response from updating parent
+message SetFrameParentResponse { common.Status status = 1; }
+
+// Request to move a frame now, without saving
+message UpdateFramePoseRequest {
+  spatial.FrameType      type           = 1;
+  string                 name           = 2;
+  spatial.ReferenceFrame reference      = 3;
+  string                 reference_name = 4; // Required when frame is REFERENCE_FRAME_NAMED
+  spatial.SE3Pose        pose           = 5; // Pose in reference coordinates
+}
+
+// Response from updating frame
+message UpdateFramePoseResponse { common.Status status = 1; }
+
+// Request to check if frame has parent
+message HasFrameParentRequest {
+  spatial.FrameType type        = 1;
+  string            name        = 2;
+  string            parent_name = 3;
+}
+
+// Response indicating if object has parent
+message HasFrameParentResponse {
+  common.Status status     = 1;
+  bool          has_parent = 2;
+}
+
+// Request to check if object has child
+message HasFrameChildRequest {
+  spatial.FrameType type       = 1;
+  string            name       = 2;
+  string            child_name = 3;
+}
+
+// Response indicating if object has child
+message HasFrameChildResponse {
+  common.Status status    = 1;
+  bool          has_child = 2;
+}

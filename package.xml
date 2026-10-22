@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package format="2">
+  <name>flexiv_pdk</name>
+  <version>1.0.0</version>
+  <description>Flexiv PDK client library (prebuilt binary distribution)</description>
+  <license>Apache License 2.0</license>
+  <author>Flexiv Robotics</author>
+  <maintainer email="use-github-issues-instead-of-email@flexiv.com">Flexiv Robotics</maintainer>
+
+  <depend>eigen</depend>
+  <depend>protobuf-dev</depend>
+  <depend>libgrpc</depend>
+  <build_depend>protobuf-compiler-grpc</build_depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>

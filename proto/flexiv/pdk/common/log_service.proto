@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package flexiv.pdk.common;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/common/log_entry.proto";
+import "google/protobuf/timestamp.proto";
+
+// The server's log: what it did, warnings about calls that still succeeded,
+// and work it does in the background. A call's status says why that call
+// failed; the log shows what led up to it.
+//
+// Needs no active workcell.
+service LogService {
+  // Set the minimum level the server logs.
+  rpc SetLogLevel(SetLogLevelRequest) returns (SetLogLevelResponse);
+
+  // Recent log entries, oldest first. The server keeps the most recent
+  // entries since it started.
+  rpc GetLogHistory(GetLogHistoryRequest) returns (GetLogHistoryResponse);
+
+  // Log entries as they are written, until the client cancels the call.
+  rpc StreamLogEntries(StreamLogEntriesRequest) returns (stream LogEntry);
+}
+
+// Request to set log level
+message SetLogLevelRequest {
+  LogEntry.Level level = 1;
+}
+
+// Response from setting log level
+message SetLogLevelResponse {
+  Status status = 1;
+}
+
+// Request for recent log entries
+message GetLogHistoryRequest {
+  LogEntry.Level            min_level   = 1; // [optional] Default is DEBUG, every entry.
+  uint32                    max_entries = 2; // [optional] Newest entries to return. Default is all the server has kept.
+  google.protobuf.Timestamp since       = 3; // [optional] Only entries written after this time. Default is no limit.
+}
+
+// Response containing recent log entries, oldest first
+message GetLogHistoryResponse {
+  Status            status  = 1;
+  repeated LogEntry entries = 2;
+}
+
+// Request to stream log entries
+message StreamLogEntriesRequest {
+  LogEntry.Level min_level = 1; // [optional] Default is DEBUG, every entry.
+}

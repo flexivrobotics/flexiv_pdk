@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package flexiv.pdk.physics;
+
+import "flexiv/pdk/spatial/geometry.proto";
+
+// Inertia tensor. [kg m^2]
+message Inertia {
+  double ixx = 1; // [optional] Default is 0
+  double iyy = 2; // [optional] Default is 0
+  double izz = 3; // [optional] Default is 0
+  double ixy = 4; // [optional] Default is 0
+  double ixz = 5; // [optional] Default is 0
+  double iyz = 6; // [optional] Default is 0
+}
+
+// Similar to URDF <inertial>
+message Inertial {
+  spatial.SE3Pose origin  = 1; // [optional] Center of mass (m) and principle axes of inertia. Default is 0 position and identity rotation.
+  double          mass    = 2; // [optional] Mass (kg). Default is 0.
+  Inertia         inertia = 3; // [optional] Inertia about the center of mass. Default is 0.
+}

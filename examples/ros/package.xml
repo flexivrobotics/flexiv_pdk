@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='utf-8'?>
+<package format="2">
+  <name>pdk_cpp_examples</name>
+  <version>1.0.0</version>
+  <description>Flexiv PDK C++ examples</description>
+  <license>Flexiv Robotics License</license>
+  <author>Zhan Fan Quek</author>
+  <maintainer email="zfquek@flexiv.com">Zhan Fan Quek</maintainer>
+
+  <build_depend>ament_cmake</build_depend>
+  <build_depend>ros_industrial_cmake_boilerplate</build_depend>
+
+  <depend>flexiv_pdk</depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package flexiv.pdk.scene.collision;
+
+// Collision configuration
+// Every pair of objects and system components is checked for collisions,
+// except the pairs listed in pairs.
+message CollisionConfig {
+  string                 name             = 1;      // [required]
+  repeated CollisionPair pairs            = 2;      // [optional] Pairs allowed to collide, not checked. Default is empty, i.e. check every pair
+  double                 collision_margin = 3;      // [required] minimum distance to the closest collision object in m
+}
+
+// Get the list of system components using CollisionService.ListComponents
+message CollisionPair {
+  string name1 = 1; // [required] Name of an object or system component
+  string name2 = 2; // [required] Name of an object or system component
+}

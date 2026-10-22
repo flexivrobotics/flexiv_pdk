@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package flexiv.pdk.workcell;
+
+import "google/protobuf/timestamp.proto";
+
+// Workcell configuration
+message Workcell {
+  string name                       = 1; // [required]
+  string description                = 2; // [required] Detailed description of the workcell purpose and configuration
+  google.protobuf.Timestamp created = 3; // [required] Timestamp of when the workcell was first created. Default is determined automatically.
+  google.protobuf.Timestamp updated = 4; // [required] Timestamp of the last time the workcell was saved. Default is determined automatically.
+}

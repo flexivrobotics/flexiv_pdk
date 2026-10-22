@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package flexiv.pdk.common;
+
+message Status {
+
+  enum Code {
+    OK                  = 0; // Request was successful
+    NOT_FOUND           = 1; // Request contained a name, but the data was not found
+    INVALID_ARGUMENT    = 2; // Request contained invalid arguments
+    INTERNAL_ERROR      = 3; // Request failed due to an internal error
+    FAILED_PRECONDITION = 4; // Cannot execute operation, preconditions not met
+    PERMISSION_DENIED   = 5; // Operation requires a license this computer does not have
+  }
+  
+  Code   code    = 1; // [required]
+  string message = 2; // [optional]
+}

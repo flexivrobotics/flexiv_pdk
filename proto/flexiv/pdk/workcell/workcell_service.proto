@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package flexiv.pdk.workcell;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/workcell/workcell.proto";
+import "google/protobuf/empty.proto";
+
+// Workcell service
+service WorkcellService {
+
+  // Basic operations
+  rpc Create(CreateRequest)            returns (  CreateResponse);
+  rpc Load(    NameRequest)            returns (WorkcellResponse);
+  rpc Remove(  NameRequest)            returns (  RemoveResponse);
+  rpc Rename(RenameRequest)            returns (  RenameResponse);
+  rpc Exists(  NameRequest)            returns (  ExistsResponse);
+  rpc List(     google.protobuf.Empty) returns (    ListResponse);
+  rpc GetActive(google.protobuf.Empty) returns (WorkcellResponse);
+
+  // Workcell field operations
+  rpc SetDescription(SetDescriptionRequest) returns (SetDescriptionResponse);
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request to create a workcell
+message CreateRequest {
+  string name = 1;
+  string description = 2;   // Detailed description of the workcell purpose and configuration
+}
+
+// Response from creating a workcell
+message CreateResponse {
+  common.Status status = 1;
+}
+
+// Request with name
+message NameRequest {
+  string name = 1;
+}
+
+// Response containing workcell data
+message WorkcellResponse {
+  common.Status status = 1;
+  Workcell workcell = 2;
+}
+
+// Response from removing a workcell
+message RemoveResponse {
+  common.Status status = 1;
+}
+
+// Request to rename a workcell
+message RenameRequest {
+  string old_name = 1;
+  string new_name = 2;
+}
+
+// Response from renaming a workcell
+message RenameResponse {
+  common.Status status = 1;
+}
+
+// Response indicating if workcell exists
+message ExistsResponse {
+  common.Status status = 1;
+  bool exists = 2;
+}
+
+// Response containing all workcell names
+message ListResponse {
+  common.Status status = 1;
+  repeated Workcell workcells = 2;
+}
+
+// Request to set the description of a workcell
+message SetDescriptionRequest {
+  string name = 1;
+  string description = 2;
+}
+
+// Response from setting the description of a workcell
+message SetDescriptionResponse {
+  common.Status status = 1;
+}

@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish.generator;
+
+import "flexiv/pdk/surface_finish/generator/variable_spacing.proto";
+
+// Parameters to create a path by sampling waypoints along CAD edges.
+//
+// In your application, allow the user to select CAD edges:
+// 1. Import a STEP model into the Open Cascade (OCCT) XDE document session.
+// 2. Identify the TopoDS_Edge edges that define the path.
+// 3. Extract the unique OCCT Entry string (TDF_Label) for each TopoDS_Edge, and append to the EdgePath.edges.
+//    See include/flexiv/pdk/surface_finish/occt_entry_string.hpp for more details.
+// 4. Identify the TopoDS_Face faces, adjacent to the edges. The face normals are used to compute the Z-axis of waypoints.
+// 5. Extract the unique OCCT Entry string (TDF_Label) for each TopoDS_Face, and append to the EdgePath.faces.
+//
+// Add the mesh to the Flexiv PDK scene: 
+// 1. Create flexiv.pdk.scene.Object
+// 2. Add a flexiv.pdk.spatial.visual to the object
+// 3. Set visual.shape.mesh to the STEP file
+// 4. Add the object to scene using flexiv.pdk.scene.ConfigService.Add()
+//
+// Use the SurfaceFinishService to generate the path, refine the path, and create robot motion.
+message EdgePath {
+  string             cad_filename    = 1; // Optional. CAD filename associated with the edges, if parent has more than one visual mesh.
+  repeated string    edges           = 2; // list of OCCT entry strings of edges
+  repeated string    faces           = 3; // list of OCCT entry strings of faces
+
+  oneof waypoint_spacing {
+    double          fixed_spacing    = 4; // fixed distance between waypoints [m]
+    VariableSpacing variable_spacing = 5;
+  }
+}

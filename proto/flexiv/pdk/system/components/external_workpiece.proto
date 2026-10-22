@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+import "flexiv/pdk/system/components/adapter.proto";
+import "flexiv/pdk/system/components/external_axis.proto";
+import "flexiv/pdk/system/components/tool.proto";
+import "flexiv/pdk/system/components/tool_adapter.proto";
+
+message ExternalWorkpiece {
+  Adapter       mount        = 2; // [required] set external axis base pose in system base.
+  ExternalAxis  axis         = 1; // [required]
+  ToolAdapter   tool_adapter = 4; // [optional] set tool base pose in external axis' flange.
+  repeated Tool tool         = 3; // [optional] Default is no tool.
+}

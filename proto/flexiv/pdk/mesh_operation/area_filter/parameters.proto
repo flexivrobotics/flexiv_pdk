@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package flexiv.pdk.mesh_operation.area_filter;
+
+// Parameters to remove bump/valley regions of an area mesh.
+message BumpValleyRemoval {
+  // Tool disk radius, in metre.
+  double tool_disk_radius = 1;
+
+  // Minimum allowed area for a bump/valley region to be removed, as a factor of
+  // the tool disk area.
+  double
+      minimum_bump_valley_region_removal_area_factor_based_on_tool_disk_area =
+          2;
+
+  // Minimum allowed component area after bump/valley region removal, as a
+  // factor of the tool disk area. Any resulting component with an area below
+  // this threshold is not included in the output.
+  double minimum_component_area_factor_based_on_tool_disk_area = 3;
+
+  // Angle threshold for bump region removal, in radian. The larger the value,
+  // the less sensitive the filter is to small bump changes.
+  double bump_region_removal_angle_threshold = 4;
+
+  // Angle threshold for valley region removal, in radian. The larger the value,
+  // the less sensitive the filter is to small valley changes.
+  double valley_region_removal_angle_threshold = 5;
+}
+
+// Parameters to offset the border of an area mesh inward.
+message BorderOffset {
+  // Border offset distance, in metre.
+  double offset = 1;
+
+  // If true, fall back to the original area mesh when the offset result would
+  // otherwise be empty.
+  bool flag_fallback_to_original_if_empty = 2;
+
+  // Minimum allowed component area after border offset, in square metre. Any
+  // resulting component with an area below this threshold is removed.
+  double minimum_component_area_after_border_offset = 3;
+}
+
+// Parameters to remove unreachable regions of an area mesh, based on per-vertex
+// reachability scores computed server-side via inverse kinematics for the given
+// system_name and tool_name.
+message ReachabilityRemoval {
+  // Minimum allowed component area after reachability removal, in square metre.
+  // Any resulting component with an area below this threshold is removed.
+  double minimum_component_area_after_reachability_removal = 1;
+
+  // Reachability threshold for clipping, between 0 and 0.95. Regions with a
+  // reachability score below this threshold are removed. A higher value
+  // produces more conservative cuts.
+  double reachability_threshold = 2;
+
+  // Robot system name to check reachability against.
+  string system_name = 3;
+
+  // Tool name to check reachability against.
+  string tool_name = 4;
+
+  // Currently unused; reserved for a future workspace-sphere pre-filter.
+  double workspace_radius_scale_factor = 5;
+}
+
+// Parameters to divide an area mesh into a grid of smaller rectangular regions.
+message RegionDivision {
+  // Length of the division rectangle, in metre.
+  double rect_length = 1;
+
+  // Width of the division rectangle, in metre.
+  double rect_width = 2;
+
+  // Minimum allowed component area after region division, in square metre. Any
+  // resulting component with an area below this threshold is removed.
+  double minimum_area_after_division = 3;
+}

@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package flexiv.pdk.point_to_point_path;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/spatial/waypoint.proto";
+
+// Point-to-point path service
+service PointToPointPathService {
+
+  // Basic point to point path planning operations
+  rpc Plan(PointToPointPathRequest)                returns (PointToPointPathResponse);
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request to plan point to point path based on joint space waypoints
+message PointToPointPathRequest {
+  string path_name = 1;                                     // [required] name of path to be created
+  string collision_config_name = 2;                         // [required] name of collision configuration
+  oneof waypoint_type {
+    PTPJointWaypoints             joint_waypoints         = 3;
+    PTPTargetWaypoints            target_waypoints        = 4;
+  }
+}
+
+// Response from point to point path planning
+message PointToPointPathResponse {
+  common.Status status = 1;
+}
+
+message PTPJointWaypoints{
+  // [required] system that will run this point to point path
+  string system_name = 1;
+
+  // [required] tcp for forward kinematics to calculate Cartesian poses
+  string tcp_name = 2;
+
+  // [required] list of joint waypoints
+  repeated spatial.JointWaypoint joint_waypoints = 3;
+}
+
+message PTPTargetWaypoints {
+  // [required] list of target waypoint names
+  repeated string target_waypoint_names = 1;
+}

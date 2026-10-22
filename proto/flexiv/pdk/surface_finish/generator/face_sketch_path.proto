@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish.generator;
+
+import "flexiv/pdk/spatial/geometry.proto";
+import "flexiv/pdk/surface_finish/generator/variable_spacing.proto";
+
+// Parameters to create a path by sampling waypoints on CAD faces, between given points on the faces.
+//
+// In your application, allow the user to select CAD faces:
+// 1. Import a STEP model into the Open Cascade (OCCT) XDE document session.
+// 2. Identify the TopoDS_Face faces to raster scan.
+// 3. Extract the unique OCCT Entry string (TDF_Label) for each TopoDS_Face, and append to the FaceSketchPath.faces.
+//    See include/flexiv/pdk/surface_finish/occt_entry_string.hpp for more details.
+// 4. Identify points on the faces that define the sketch.
+//
+// Add the mesh to the Flexiv PDK scene: 
+// 1. Create flexiv.pdk.scene.Object
+// 2. Add a flexiv.pdk.spatial.visual to the object
+// 3. Set visual.shape.mesh to the STEP file
+// 4. Add the object to scene using flexiv.pdk.scene.ConfigService.Add()
+// 
+// Use the SurfaceFinishService to generate the path, refine the path, and create robot motion.
+message FaceSketchPath {
+  string                   cad_filename     = 1; // Optional. CAD filename associated with the faces, if parent has more than one visual mesh.
+  repeated spatial.Vector3 points           = 2; // list of points on faces
+  repeated string          faces            = 3; // list of OCCT entry strings of faces
+
+  oneof waypoint_spacing {
+    double                 fixed_spacing    = 4; // fixed distance between waypoints [m]
+    VariableSpacing        variable_spacing = 5;
+  }
+}

@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package flexiv.pdk.license;
+
+import "flexiv/pdk/common/status.proto";
+import "google/protobuf/timestamp.proto";
+
+// Which PDK services this computer is licensed for, and how to license more.
+//
+// Four services require a license, each tied to this computer's TPM 2.0 security
+// chip. Calling one without a license returns PERMISSION_DENIED in the response
+// status. This service needs no active workcell.
+service LicenseService {
+
+  // List every licensable service and its license state.
+  rpc List(ListRequest) returns (ListResponse);
+
+  // Install a license received from Flexiv. Takes effect immediately.
+  rpc Save(SaveRequest) returns (SaveResponse);
+
+  // Get this computer's identifier, to send to Flexiv when buying a license.
+  rpc GetDeviceIdentifier(GetDeviceIdentifierRequest) returns (GetDeviceIdentifierResponse);
+
+}
+
+// =======================================================
+// DEFINITIONS
+// =======================================================
+
+// A PDK service that requires its own license.
+enum LicensedService {
+  LICENSED_SERVICE_UNSPECIFIED         = 0;
+  LICENSED_SERVICE_POINT_TO_POINT_PATH = 1;  // point_to_point_path.PointToPointPathService
+  LICENSED_SERVICE_SURFACE_FINISH      = 2;  // surface_finish.SurfaceFinishService
+  LICENSED_SERVICE_MESH_OPERATION      = 3;  // pdk.MeshOperationService
+  reserved 4;
+  reserved "LICENSED_SERVICE_VISION";
+}
+
+// Whether a service may be used, and if not, why not.
+enum LicenseState {
+  LICENSE_STATE_UNSPECIFIED        = 0;
+  LICENSE_STATE_LICENSED           = 1;  // Usable
+  LICENSE_STATE_NO_LICENSE         = 2;  // Not licensed on this computer
+  LICENSE_STATE_EXPIRED            = 3;  // The license has expired
+  LICENSE_STATE_WRONG_MACHINE      = 4;  // The license was issued for another computer
+  LICENSE_STATE_INVALID_LICENSE    = 5;  // A license file for it failed verification
+  LICENSE_STATE_UNSUPPORTED_FORMAT = 6;  // Its license file requires a newer PDK
+  LICENSE_STATE_SERVER_TOO_OLD     = 7;  // Its license requires a newer PDK server
+  LICENSE_STATE_TPM_UNAVAILABLE    = 8;  // The security chip could not be read
+}
+
+// License state of one service.
+message ServiceLicense {
+  LicensedService service = 1;
+  LicenseState    state   = 2;
+  string name             = 3;  // Machine-readable name, e.g. "surface_finish"
+  string display_name     = 4;  // Name to show a person, e.g. "Surface finish"
+  string grpc_service     = 5;  // Full gRPC service name
+  string detail           = 6;  // Explanation to show the user
+
+  google.protobuf.Timestamp expires = 7;  // When it stops working. Unset: never
+
+  string license_id = 8;  // The license that decided this state, if any
+}
+
+// A license installed on this computer.
+message InstalledLicense {
+  string license_id = 1;  // Flexiv's reference for this license
+  string customer   = 2;  // Who it was issued to
+
+  google.protobuf.Timestamp issued  = 3;  // When Flexiv issued it
+  google.protobuf.Timestamp expires = 4;  // When it stops working. Unset: never
+
+  repeated LicensedService services = 5;  // Services it grants
+
+  bool   hardware_verified = 6;  // Whether the security chip's certificate was checked
+  string notes             = 7;  // Free text from Flexiv
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+message ListRequest {}
+
+message ListResponse {
+  common.Status status = 1;
+
+  repeated ServiceLicense   services = 2;  // Every licensable service, licensed or not
+  repeated InstalledLicense licenses = 3;  // Licenses installed on this computer
+
+  bool   tpm_available     = 4;  // Whether this computer's security chip could be read
+  string tpm_detail        = 5;  // The security chip, or why there is none
+  string license_directory = 6;  // Folder the license files are read from
+
+  repeated string warnings = 7;  // Problems with the license folder
+}
+
+message GetDeviceIdentifierRequest {}
+
+message GetDeviceIdentifierResponse {
+  common.Status status = 1;
+
+  string identifier          = 2;  // Identifier to send to Flexiv
+  bool   hardware_verifiable = 3;  // Whether the security chip has a certificate
+}
+
+message SaveRequest {
+  string license   = 1;  // [required] The license string received from Flexiv
+  string file_name = 2;  // File to save it as. Default: the license id. Replaces an existing file
+}
+
+message SaveResponse {
+  common.Status status = 1;
+
+  repeated ServiceLicense  services       = 2;  // License state after installing
+  repeated LicensedService newly_licensed = 3;  // Services this license enabled
+  string                   file_path      = 4;  // Where the license was saved
+}

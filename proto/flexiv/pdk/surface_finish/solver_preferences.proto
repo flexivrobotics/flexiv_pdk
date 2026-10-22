@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish;
+
+import "flexiv/pdk/common/solver_options.proto";
+import "flexiv/pdk/spatial/waypoint.proto";
+
+// motion planning parameters
+message SolverPreferences {
+
+  // =======================================================
+  // ENUMS
+  // =======================================================
+
+  // Solver type for robot motion generation
+  enum SolverType {
+    SOLVER_TYPE_BASIC    = 0; // Basic solver
+    SOLVER_TYPE_ADVANCED = 1; // Advanced solver
+  }
+
+  // =======================================================
+  // DATA FIELDS
+  // =======================================================  
+
+  string                             system_name             = 1; // [required] system that will run this trajectory
+  string                             tcp_ecp_name            = 2; // [required] tcp or ecp following the trajectory
+  SolverType                         solver_type             = 3; // [required] Solver type to use
+  spatial.NullSpace                  null_space              = 4; // [required] desired null space of the system
+  common.ExternalRobotAxis           external_robot_axis     = 5; // [optional] How to handle the external robot axis
+  common.ExternalWorkpieceAxis       external_workpiece_axis = 6; // [optional] How to handle the external workpiece axis
+  bool                               tool_symmetry           = 7; // [optional] Robot can ignore tool-axis rotation, like polish wheels
+  string                             tcp_to_attach_object    = 8; // [optional] Tcp to attach object, for ECP trajectory only
+  string                             object_grasp_pose       = 9; // [optional] Grasp pose to attach/grasp ecp object
+  repeated double                    joint_position_seed     = 10; // [optional] An initial seed for the joint position solver. If not provided, the current robot state will be used as the seed.
+}

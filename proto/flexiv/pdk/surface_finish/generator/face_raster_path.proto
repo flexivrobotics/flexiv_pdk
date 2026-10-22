@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish.generator;
+
+import "flexiv/pdk/spatial/geometry.proto";
+import "flexiv/pdk/surface_finish/generator/surface_border.proto";
+import "flexiv/pdk/surface_finish/generator/variable_spacing.proto";
+
+// Parameters to create a path by sampling waypoints on CAD faces, in a raster pattern.
+//
+// In your application, allow the user to select CAD faces:
+// 1. Import a STEP model into the Open Cascade (OCCT) XDE document session.
+// 2. Identify the TopoDS_Face faces to raster scan.
+// 3. Extract the unique OCCT Entry string (TDF_Label) for each TopoDS_Face, and append to the FaceRasterPath.faces.
+//    See include/flexiv/pdk/surface_finish/occt_entry_string.hpp for more details.
+//
+// Add the mesh to the Flexiv PDK scene:
+// 1. Create flexiv.pdk.scene.Object
+// 2. Add a flexiv.pdk.spatial.visual to the object
+// 3. Set visual.shape.mesh to the STEP file
+// 4. Add the object to scene using flexiv.pdk.scene.ConfigService.Add()
+//
+// Use the SurfaceFinishService to generate the path, refine the path, and create robot motion.
+message FaceRasterPath {
+  string            cad_filename          = 1; // Optional. CAD filename associated with the faces, if parent has more than one visual mesh.
+  double            raster_line_spacing   = 2; // distance between raster lines [m]
+  double            raster_rotation       = 3; // rotate the pattern on the faces [rad]
+  bool              raster_flip           = 4; // flip the starting direction
+  spatial.Vector3   start_position        = 5; // [m]
+  double            gap_tolerance_on_face = 6; // gap width on face, that path can jump over [m]
+  double            gap_tolerance_between_faces = 7; // gap width between face, that path can jump over [m]
+  repeated string   faces                 = 8; // list of OCCT entry strings of faces
+
+  oneof waypoint_spacing {
+    double          fixed_spacing         = 9; // fixed distance between waypoints [m]
+    VariableSpacing variable_spacing      = 10;
+  }
+
+  oneof border {
+    EdgeBorder      edge_border           = 11;
+    PolygonBorder   polygon_border        = 12;
+  }
+}

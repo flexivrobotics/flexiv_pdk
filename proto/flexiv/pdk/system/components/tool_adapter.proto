@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+message ToolAdapter {
+  string name         = 1; // [required] Users' name, like "sander-adapter". must be unique within the system.
+  string manufacturer = 2; // [required] From the list of saved tool adapter, like "Mirka"
+  string model        = 3; // [required] AFrom the list of saved tool adapter, like "AIROS-adapter"
+  double rotation     = 4; // [optional] Rotation (rad) between the robot flange and adapter. Default is 0.
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+// Joint group enum
+enum JointGroup {
+  JOINT_GROUP_SYSTEM                  = 0; // all actuated joints in the system
+  JOINT_GROUP_ARM                     = 1;
+  JOINT_GROUP_EXTERNAL_ROBOT_AXIS     = 2;
+  JOINT_GROUP_EXTERNAL_WORKPIECE_AXIS = 3;
+}

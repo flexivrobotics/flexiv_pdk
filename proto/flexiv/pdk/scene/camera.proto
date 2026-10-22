@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package flexiv.pdk.scene;
+
+import "flexiv/pdk/config_header.proto";
+
+// Similar to URDF <link>
+message Camera {
+  ConfigHeader header        = 1;
+  double       far_width     = 2; // [required] Width of the far plane, in meters
+  double       far_height    = 3; // [required] Height of the far plane, in meters
+  double       far_distance  = 4; // [required] Distance to far plane, in meters
+  double       near_distance = 5; // [required] Distance to near plane, in meters
+  double       depth_scale   = 6; // [required] Depth scale factor for depth image, to convert raw depth image value to meters, used by the volumetric algorithm. 
+                                  // depth [m] = depth [raw depth units] / depth_scale. 
+  int32        camera_id     = 7; // [required] ID of the camera  
+}

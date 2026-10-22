@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish;
+
+import "flexiv/pdk/config_header.proto";
+import "flexiv/pdk/spatial/waypoint.proto";
+import "flexiv/pdk/surface_finish/generator/edge_path.proto";
+import "flexiv/pdk/surface_finish/generator/face_raster_path.proto";
+import "flexiv/pdk/surface_finish/generator/face_sketch_path.proto";
+import "flexiv/pdk/surface_finish/generator/manual_path.proto";
+import "flexiv/pdk/surface_finish/generator/mesh_raster_path.proto";
+import "flexiv/pdk/surface_finish/generator/mesh_sketch_path.proto";
+import "flexiv/pdk/surface_finish/solver_preferences.proto";
+import "flexiv/pdk/surface_finish/path_refinement.proto";
+
+// [output only] Path crated by the surface finish service
+message Path {
+
+  ConfigHeader                       header              = 1; // name of parent object containing the waypoints
+
+  // stage 1: parameters to generate nominal cartesian waypoints
+  // See flexiv.pdk.surface_finish.GenerateNominalPathRequest for more details.
+  oneof nominal {
+    generator.ManualPath             manual_path         = 8;
+    generator.EdgePath               edge_path           = 9;
+    generator.FaceRasterPath         surface_scan_path   = 10;
+    generator.FaceSketchPath         surface_sketch_path = 11;
+    generator.MeshRasterPath         mesh_raster_path    = 12;
+    generator.MeshSketchPath         mesh_sketch_path    = 13;
+  }
+
+  // stage 2: parameters to generate processed cartesian waypoints from nominal cartesian waypoints
+  PathRefinement                     refinement          = 2; // [guaranteed]
+
+  // stage 3: parameters to generate joint waypoints from processed cartesian waypoints
+  SolverPreferences                  solver_preferences      = 3; // [conditional]
+
+  repeated spatial.CartesianWaypoint nominal_cartesian   = 4; // [guaranteed] stage 1 generated waypoints      result
+  repeated spatial.CartesianWaypoint refined_cartesian   = 5; // [conditional] stage 2 refined   waypoints      result
+  repeated spatial.JointWaypoint     basic_solution      = 6; // [conditional] stage 3 basic    motion planning result
+  repeated spatial.JointWaypoint     advanced_solution   = 7; // [conditional] stage 3 advanced motion planning result
+}

@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish.generator;
+
+import "flexiv/pdk/spatial/waypoint.proto";
+
+// Manual path parameters. Create a path by manually adding cartesian waypoints/
+// Waypoints are with respect to the parent.
+//
+// Use the SurfaceFinishService to generate the path, refine the path, and create robot motion.
+message ManualPath {
+  repeated spatial.CartesianWaypoint cartesian = 1;
+}

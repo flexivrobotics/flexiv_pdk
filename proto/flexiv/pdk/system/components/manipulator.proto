@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package flexiv.pdk.system.components;
+
+message Manipulator {
+  string name                        = 1; // [required] users' name, like "arm". must be unique within the system.
+  string arm_serial_number           = 2; // [required] arm public serial number, like "Rizon 4-000123".
+  repeated float lower_limit         = 4; // [optional] software lower limit [rad]. Default is limits from user manual. Example: [-2.7663, -2.2427, -2.9409, -1.8413, -2.9409, -1.3701, -2.9409]
+  repeated float upper_limit         = 5; // [optional] software upper limit [rad]. Default is limits from user manual. Example: [ 2.7663,  2.2427,  2.9409,  2.6616,  2.9409,  4.5117,  2.9409]
+  repeated float home_position       = 6; // [optional] initial position [rad]. Default is home position from user manual. Example: [0,0,0,0,0,0,0]
+}

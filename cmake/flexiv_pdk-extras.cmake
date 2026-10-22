@@ -1,0 +1,6 @@
+find_package(gRPC CONFIG QUIET)
+if(NOT gRPC_FOUND)
+    message(STATUS "${CMAKE_CURRENT_LIST_FILE}: gRPC Config not found, so using PkgConfig.")   
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(GRPC_PKG REQUIRED IMPORTED_TARGET grpc++)
+endif()

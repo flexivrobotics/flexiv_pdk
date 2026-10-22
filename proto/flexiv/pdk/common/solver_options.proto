@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package flexiv.pdk.common;
+
+enum ExternalRobotAxis
+{
+  EXTERNAL_ROBOT_NONE      = 0; // robot has no external robot axis.
+  EXTERNAL_ROBOT_PRESET    = 1; // all waypoints have a fixed external axis position.
+  EXTERNAL_ROBOT_PREFERRED = 2; // all waypoints have a preferred external axis position
+}
+
+enum ExternalWorkpieceAxis
+{
+  EXTERNAL_WORKPIECE_NONE      = 0; // robot has no external robot axis.
+  EXTERNAL_WORKPIECE_NOT_USED  = 1; // external robot axis not part of planning group.
+  EXTERNAL_WORKPIECE_PRESET    = 2; // all waypoints have a fixed external axis position.
+  EXTERNAL_WORKPIECE_PREFERRED = 3; // all waypoints have a preferred external axis position.
+}

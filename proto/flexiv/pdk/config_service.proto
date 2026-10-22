@@ -1,0 +1,228 @@
+syntax = "proto3";
+
+package flexiv.pdk;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/spatial/geometry.proto";
+import "flexiv/pdk/spatial/frame_defs.proto";
+import "flexiv/pdk/scene/camera.proto";
+import "flexiv/pdk/scene/coordinate.proto";
+import "flexiv/pdk/scene/object.proto";
+import "flexiv/pdk/system/system.proto";
+import "flexiv/pdk/scene/target_waypoint.proto";
+import "flexiv/pdk/surface_finish/path.proto";
+import "flexiv/pdk/point_to_point_path/path.proto";
+import "google/protobuf/empty.proto";
+
+// Scene configuration saved in the active workcell: cameras, coordinates,
+// objects, systems, paths and poses.
+//
+// The parent and pose saved here are where an item starts each time the
+// workcell is loaded. To read or move where an item is right now, without
+// saving, use FrameService.
+//
+// Requires an active workcell: create or load one with WorkcellService first.
+service ConfigService {
+  // Basic operations
+
+  rpc CheckReady( CheckReadyRequest) returns ( CheckReadyResponse);
+  rpc Exists( TypeNameConfigRequest) returns (  ExistsConfigResponse);
+  rpc Get(    TypeNameConfigRequest) returns (     GetConfigResponse);
+  rpc List(       ListConfigRequest) returns (    ListConfigResponse);
+  rpc Remove( TypeNameConfigRequest) returns (  RemoveConfigResponse);
+  rpc Rename(   RenameConfigRequest) returns (  RenameConfigResponse);
+  rpc Save(       SaveConfigRequest) returns (    SaveConfigResponse);
+
+  // Saved parent, and saved pose relative to the parent. Changing either also
+  // moves the item in the scene now.
+  rpc GetParent(TypeNameConfigRequest) returns (GetParentResponse);
+  rpc SetParent(     SetParentRequest) returns (SetParentResponse);
+  rpc GetPose(  TypeNameConfigRequest) returns (  GetPoseResponse);
+  rpc SetPose(         SetPoseRequest) returns (  SetPoseResponse);
+
+  // Get URDF containing all elements in scene
+  rpc GetUrdf(google.protobuf.Empty) returns (  GetUrdfResponse);
+
+  // Search operations
+
+  rpc HasParent(   HasParentRequest) returns ( HasParentResponse);
+  rpc HasChild(     HasChildRequest) returns (  HasChildResponse);
+}
+
+// =======================================================
+// DEFINITIONS
+// =======================================================
+
+enum ConfigType {
+  CONFIG_TYPE_ALL          = 0; // Search all types. Slower.
+  CONFIG_TYPE_CAMERA       = 1;
+  CONFIG_TYPE_COORDINATE   = 2;
+  CONFIG_TYPE_SURFACE_PATH = 3;
+  CONFIG_TYPE_OBJECT       = 4;
+  CONFIG_TYPE_P2P_PATH     = 5;
+  CONFIG_TYPE_SYSTEM       = 6;
+  CONFIG_TYPE_SYSTEM_POSE  = 7;
+  CONFIG_TYPE_OBJECT_POSE  = 8;
+  CONFIG_TYPE_GRASP_POSE   = 9;
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Response containing URDF content
+message GetUrdfResponse {
+  common.Status status       = 1;
+  string        urdf_content = 2;
+}
+
+// Request to get an config
+message TypeNameConfigRequest {
+  ConfigType type = 1;
+  string     name = 2;
+}
+
+// Request to check whether the preconditions for operating on a config type are
+// met (e.g. a workcell is active). The server owns the precondition logic.
+message CheckReadyRequest {
+  ConfigType type = 1;
+}
+
+// Response from a readiness check. status.code == OK means ready;
+// FAILED_PRECONDITION means not ready, with status.message explaining why.
+message CheckReadyResponse {
+  common.Status status = 1;
+}
+
+// Response containing config data
+message GetConfigResponse {
+  common.Status                           status       = 1;
+  oneof config {
+    scene.Coordinate                      coordinate   = 2;
+    scene.Camera                          camera       = 3;
+    scene.Object                          object       = 4;
+    system.System                         system       = 5;
+    surface_finish.Path                   surface_path = 6;
+    point_to_point_path.Path              p2p_path     = 7;
+    scene.TargetWaypoint                  system_pose  = 8;
+    scene.Coordinate                      grasp_pose   = 9;
+    scene.Coordinate                      object_pose  = 10;
+  }
+}
+
+// Request to save an config
+message SaveConfigRequest {
+  oneof config {
+    scene.Coordinate                      coordinate      = 1;
+    scene.Camera                          camera          = 2;
+    scene.Object                          object          = 3;
+    system.System                         system          = 4;
+    surface_finish.Path                   surface_path    = 5;
+    point_to_point_path.Path              p2p_path        = 6;
+    scene.TargetWaypoint                  system_pose     = 7;
+    scene.Coordinate                      object_pose     = 8;
+    scene.Coordinate                      grasp_pose      = 9;
+  }
+}
+
+// Response from saving an config
+message SaveConfigResponse {
+  common.Status status = 1;
+}
+
+// Response from removing an config
+message RemoveConfigResponse {
+  common.Status status = 1;
+}
+
+// Request to rename an config
+message RenameConfigRequest {
+  ConfigType type     = 1;
+  string     old_name = 2;
+  string     new_name = 3;
+}
+
+// Response from renaming an config
+message RenameConfigResponse {
+  common.Status status = 1;
+}
+
+// Response indicating if config exists
+message ExistsConfigResponse {
+  common.Status status = 1;
+  bool          exists = 2;
+}
+
+// Request to list all config names
+message ListConfigRequest {
+  ConfigType type = 1;
+}
+
+// Response containing all config names
+message ListConfigResponse {
+  common.Status   status = 1;
+  repeated string names  = 2;
+}
+
+// Response containing the saved parent
+message GetParentResponse {
+  common.Status status = 1;
+  string        parent = 2;
+}
+
+// Response containing the saved pose, relative to the parent
+message GetPoseResponse {
+  common.Status   status = 1;
+  spatial.SE3Pose pose   = 2;
+}
+
+// Request to change the saved parent. The saved pose is kept relative to the
+// new parent, so the item moves with it.
+message SetParentRequest {
+  ConfigType type   = 1;
+  string     name   = 2;
+  string     parent = 3;
+}
+
+// Response from setting parent
+message SetParentResponse {
+  common.Status status = 1;
+}
+
+// Request to change the saved pose, relative to the parent
+message SetPoseRequest {
+  ConfigType      type = 1;
+  string          name = 2;
+  spatial.SE3Pose pose = 3;
+}
+
+// Response from setting pose in parent
+message SetPoseResponse {
+  common.Status status = 1;
+}
+
+// Request to check if frame has parent
+message HasParentRequest {
+  spatial.FrameType type        = 1;
+  string            name        = 2;
+  string            parent_name = 3;
+}
+
+// Response indicating if object has parent
+message HasParentResponse {
+  common.Status status     = 1;
+  bool          has_parent = 2;
+}
+
+// Request to check if object has child
+message HasChildRequest {
+  spatial.FrameType type       = 1;
+  string            name       = 2;
+  string            child_name = 3;
+}
+
+// Response indicating if object has child
+message HasChildResponse {
+  common.Status status    = 1;
+  bool          has_child = 2;
+}

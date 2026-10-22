@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package flexiv.pdk.scene;
+
+import "flexiv/pdk/physics/properties.proto";
+import "flexiv/pdk/config_header.proto";
+import "flexiv/pdk/spatial/shape.proto";
+
+// Object configuration
+message Object {
+  ConfigHeader               header         = 1; // [required]
+  physics.Inertial           inertial       = 2; // [optional] Default is 0.
+  repeated spatial.Collision collision      = 3; // [optional] Default is no collision.
+  bool                       reference_only = 4; // [optional] If object is a reference for a pattern or feeder, then do not add to the scene. Default is false.
+
+  // [optional] Default is no visual.
+  // Use CAD (.stp, .step) for precise tool path generation.
+  // Use mesh (.dae, .obj, .stl) for scanned objects.
+  repeated spatial.Visual    visual         = 5; 
+}

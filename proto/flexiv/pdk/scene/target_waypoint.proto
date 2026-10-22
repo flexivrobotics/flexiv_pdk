@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package flexiv.pdk.scene;
+
+import "flexiv/pdk/config_header.proto";
+import "flexiv/pdk/spatial/waypoint.proto";
+
+// Target Waypoint associated with a robot
+message TargetWaypoint {
+  ConfigHeader              header          = 1; // [required]
+  string                    tcp_name        = 2; // [required]
+  spatial.CartesianWaypoint cartesian       = 3; // [required]
+  spatial.JointWaypoint     joint           = 4; // [required]
+}

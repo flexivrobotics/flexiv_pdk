@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package flexiv.pdk.surface_finish.generator;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/config_header.proto";
+import "flexiv/pdk/surface_finish/generator/edge_path.proto";
+import "flexiv/pdk/surface_finish/generator/face_raster_path.proto";
+import "flexiv/pdk/surface_finish/generator/face_sketch_path.proto";
+import "flexiv/pdk/surface_finish/generator/manual_path.proto";
+import "flexiv/pdk/surface_finish/generator/mesh_raster_path.proto";
+import "flexiv/pdk/surface_finish/generator/mesh_sketch_path.proto";
+import "flexiv/pdk/surface_finish/solver_preferences.proto";
+import "flexiv/pdk/surface_finish/path_refinement.proto";
+import "flexiv/pdk/surface_finish/path.proto";
+
+// Surface finish service for creating tool path and robot motion.
+// This service builds a path in stages.
+// Data from all stages can be accessed.
+// Redoing a stage clears the result for later stages.
+service SurfaceFinishService {
+
+  rpc GenerateNominalPath(GenerateNominalPathRequest) returns (GenerateNominalPathResponse); // Stage 1: Create nominal cartesian waypoints
+  rpc RefinePath(                  RefinePathRequest) returns (         RefinePathResponse); // Stage 2: Create refined cartesian waypoints from nominal cartesian waypoints
+  rpc CreateRobotMotion(    CreateRobotMotionRequest) returns (  CreateRobotMotionResponse); // Stage 3: Create joint waypoints from refined cartesian waypoints
+  rpc Get(                                GetRequest) returns (                GetResponse); // Get full surface finish path data (parameters and waypoints)
+
+  rpc GenerateRCATrajectoryFile(GenerateRCATrajectoryFileRequest) returns (GenerateRCATrajectoryFileResponse); // Generate a trajectory file for the robot motion
+}
+
+// =======================================================
+// REQUEST & RESPONSE
+// =======================================================
+
+// Request to generate nominal path
+message GenerateNominalPathRequest {
+  ConfigHeader               header              = 1; // name of parent object containing the waypoints
+  oneof path {
+    generator.ManualPath     manual_path         = 2; // Create cartesian waypoints manually
+    generator.EdgePath       edge_path           = 3; // Create cartesian waypoints along CAD edges
+    generator.FaceRasterPath surface_scan_path   = 4; // Create cartesian waypoints in a raster scan pattern on CAD faces
+    generator.FaceSketchPath surface_sketch_path = 5; // Create cartesian waypoints from a sketch of coarsely spaced points on CAD faces
+    generator.MeshRasterPath mesh_raster_path    = 6; // Create cartesian waypoints in a raster scan pattern on a mesh
+    generator.MeshSketchPath mesh_sketch_path    = 7; // Create cartesian waypoints from a sketch of coarsely spaced points on a mesh
+  }
+}
+
+// Response from generating nominal path
+message GenerateNominalPathResponse {
+  common.Status                       status    = 1;
+  repeated string                     path_names = 2; // Names of created paths. There can be more than one path created, for example in the case of mesh raster scan.
+}
+
+// Request to refine a path
+message RefinePathRequest {
+  string         path_name  = 1; // Name of existing path
+  PathRefinement refinement = 2;
+}
+
+// Response from refining a path
+message RefinePathResponse {
+  common.Status                      status    = 1;
+}
+
+// Request to create robot motion
+message CreateRobotMotionRequest {
+  string        path_name      = 1; // Name of existing path
+  SolverPreferences solver_preferences = 2;
+}
+
+// Response from creating robot motion
+message CreateRobotMotionResponse {
+  common.Status                  status          = 1;
+}
+
+// Request to get surface finish path
+message GetRequest {
+  string path_name = 1; // Name of existing path
+}
+
+// Response containing full surface finish path
+message GetResponse {
+  common.Status status = 1;
+  Path          path   = 2;
+}
+
+// Request to generate a trajectory file
+message GenerateRCATrajectoryFileRequest {
+  string path_name = 1; // Name of existing path
+}
+
+// Response from generating a trajectory file
+message GenerateRCATrajectoryFileResponse {
+  common.Status status = 1;
+}

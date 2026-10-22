@@ -1,0 +1,26 @@
+/**
+ * @file version.h
+ */
+#ifndef FLEXIV_PDK_VERSION_H_
+#define FLEXIV_PDK_VERSION_H_
+
+#include <string>
+
+namespace flexiv {
+namespace pdk {
+
+/* clang-format off */
+
+const unsigned int FLEXIV_PDK_VERSION_MAJOR = @PROJECT_VERSION_MAJOR@;
+const unsigned int FLEXIV_PDK_VERSION_MINOR = @PROJECT_VERSION_MINOR@;
+const unsigned int FLEXIV_PDK_VERSION_PATCH = @PROJECT_VERSION_PATCH@;
+const std::string  FLEXIV_PDK_VERSION       = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
+
+const std::string  FLEXIV_PDK_VERSION_HASH  = "@PROJECT_GIT_COMMIT_HASH@";
+
+/* clang-format on */
+
+} // namespace pdk
+} // namespace flexiv
+
+#endif

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package flexiv.pdk.system;
+
+import "flexiv/pdk/common/status.proto";
+import "flexiv/pdk/common/solver_options.proto";
+import "flexiv/pdk/spatial/geometry.proto";
+import "flexiv/pdk/spatial/waypoint.proto";
+
+service KinematicsService {
+  rpc ComputeIK(IKRequest) returns (IKResponse);
+  rpc ComputeFK(FKRequest) returns (FKResponse);
+}
+
+message IKRequest {
+  string                       system_name             = 1; // [required]
+  string                       target_frame_name       = 2; // [required] name of tcp or object attached to the system
+  spatial.SE3Pose              target_pose             = 3; // [required] desired pose of the target frame
+  spatial.NullSpace            null_space              = 4; // [required] desired null space of the system
+  common.ExternalRobotAxis     external_robot_axis     = 5; // [optional] How to handle the external robot axis
+  common.ExternalWorkpieceAxis external_workpiece_axis = 6; // [optional] How to handle the external workpiece axis
+  bool                         tool_symmetry           = 7; // [optional] Robot can ignore tool-axis rotation, like polish wheels
+  repeated double              joint_position_seed     = 8; // [optional] Guess of the joint position solution  
+  string                       collision_config_name   = 9; // [required] name of collision configuration
+}
+
+message IKResponse {
+  flexiv.pdk.common.Status status   = 1;
+  repeated double             solution = 2;
+}
+
+message FKRequest {
+  string          system_name       = 1; // [required]
+  string          target_frame_name = 2; // [required] name of tcp or object attached to the system
+  repeated double joint_positions   = 3; // [required]
+}
+
+message FKResponse {
+  common.Status   status = 1;
+  spatial.SE3Pose pose   = 2;
+}
